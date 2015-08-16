@@ -6,8 +6,11 @@ http://graphics.cs.cmu.edu/projects/scene-completion/
 
 http://web.mit.edu/kehinger/www/class/
 
-### gist
-http://people.csail.mit.edu/torralba/code/spatialenvelope/
+### GIST
+
+* Used [Python wrapper](https://github.com/yuichiroTCY/lear-gist-python) for
+  [Lear's GIST implementation](http://lear.inrialpes.fr/software).
+* [Original GIST paper](http://people.csail.mit.edu/torralba/code/spatialenvelope/)
 
 ## Google image search
 http://incandescent.xyz/docs/
@@ -24,3 +27,8 @@ http://cvcl.mit.edu/database.htm
 
 http://vision.cs.princeton.edu/projects/2010/SUN/
 http://groups.csail.mit.edu/vision/TinyImages/
+
+# Etc
+
+## git submodules document
+http://git-scm.com/book/en/v2/Git-Tools-Submodules
