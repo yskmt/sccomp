@@ -37,7 +37,8 @@ def on_closing():
         mask_image.save(filename)
 
 # open image by PIL
-image = Image.open('testimages/test1_src.png')
+# image = Image.open('testimages/test1_src.png')
+image = Image.open('/Users/ysakamoto/Desktop/ss.png')
 wi, hi = image.size
 
 
