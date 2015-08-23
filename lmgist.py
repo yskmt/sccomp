@@ -34,31 +34,34 @@ def lmgist(D, image, param, save_dir=None):
     else:
         precomputed = False
 
-    n_scenes = 1    
     param.G = create_gabor(param.orientations_per_scale,
                            param.img_size+2*param.boundary_extension)
 
     n_features = param.G.shape[2]*param.number_blocks**2
 
+    # get gist for different color or not
+    if param.color == 1:
+        n_colors = 3
+    else:
+        n_colors = 1
+    
     # compute gist features for all scenes
-    gist = np.zeros([n_scenes, n_features])
-    for n in range(n_scenes):
-        g = []
-        todo = 1
-
+    gist = np.zeros([n_colors, n_features])
+    g = []
+        
+    for n in range(n_colors):
         # if gist has already computed, just read the file
-
-        if todo == 1:
-            if n_scenes>1:
-                print n, n_scenes
 
         # load image
         # img = io.imread(D, as_grey=True)
-
-        # convert to grayscale (not a true grayscale)
         img = io.imread(D)
-        img = np.mean(img, axis=2)
-        
+        # convert to grayscale (not a true grayscale)
+        if param.color == 0:
+            img = np.mean(img, axis=2)
+        # use the specified color
+        else:
+            img = img[:, :, n]
+
         # resize and crop image to make it square
         img = transform.resize(img, (param.img_size, param.img_size),
                                clip=True, order=1)
@@ -74,10 +77,10 @@ def lmgist(D, image, param, save_dir=None):
 
         # save gist if a homegist file is provided
 
-    gist[n, :] = np.reshape(g, len(g))
+        gist[n, :] = np.reshape(g, len(g))
 
-    return gist, param
-        
+    return gist.reshape(n_colors*len(g)), param
+
 
 def prefilt(img, fc=4):
     """
@@ -223,6 +226,10 @@ def show_gist(gist, param):
     n_filters = np.sum(param.orientations_per_scale)
     n_scales = len(param.orientations_per_scale)
 
+    if hasattr(param, 'G') is False:
+        param.G = create_gabor(param.orientations_per_scale,
+                               param.img_size+2*param.boundary_extension)
+    
     C = cm.hsv(np.arange(0, 256, int(256/n_scales)))[:, :-1]
     colors = np.zeros([n_filters, 3])
 
@@ -286,6 +293,7 @@ class param_gist:
         self.fc_prefilt = 4
         # number of pixels to pad
         self.boundary_extension = 32
+        self.color = 0
 
 param = param_gist()
 param.img_size = 256
@@ -294,12 +302,11 @@ param.number_blocks = 4
 param.fc_prefilt = 4
 
 # parameters for Hay's gist discreptor
-# param.imageSize = 256;
-# param.numberBlocks = 8;
-# param.orientationsPerScale = [8 6 6 4];
-# param.fc_prefilt = 4;
-# param.color = 1;  # determine gist for different colors?
-
+# param.img_size = 256
+# param.orientations_per_scale = [8, 6, 6, 4]
+# param.number_blocks = 8
+# param.fc_prefilt = 4
+# param.color = 1
 
 data_dir = '/Users/ysakamoto/Projects/sccomp/data/scene_database/'
 dirs = [d for d in
@@ -329,10 +336,10 @@ np.save('file_names', file_names)
 
 
 # analysis: find the close match of a scene chosen
-k = 555
+k = 1001
 
-gist_data = np.load('gist_data.npy')
-file_names = np.load('file_names.npy')
+gist_data = np.load('dbs/gist_data.npy')
+file_names = np.load('dbs/file_names.npy')
 
 gd = gist_data[k]
 fn = file_names[k]
@@ -353,7 +360,7 @@ for i in range(len(fn_sorted)):
     plt.imshow(img_st)
     plt.show()
 
-
+# show_gist(gd, param)
 
 # img_file = '/Users/ysakamoto/Projects/sccomp/data/scene_database/inside_city/a0004.jpg'
 # gist, param \
