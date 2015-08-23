@@ -99,7 +99,6 @@ def prefilt(img, fc=4):
     # filter
     fx, fy = np.meshgrid(np.arange(-n/2, n/2), np.arange(-n/2, n/2))
     gf = np.fft.fftshift(np.exp(-(fx**2+fy**2)/(s1**2)))
-    # gf = np.matlib.repmat(gf, [1, 1, c, N])
 
     # whitening
     output = img - np.real(np.fft.ifft2(np.fft.fft2(img)*gf))
@@ -294,6 +293,13 @@ param.orientations_per_scale = [8, 8, 8, 8]
 param.number_blocks = 4
 param.fc_prefilt = 4
 
+# parameters for Hay's gist discreptor
+# param.imageSize = 256;
+# param.numberBlocks = 8;
+# param.orientationsPerScale = [8 6 6 4];
+# param.fc_prefilt = 4;
+# param.color = 1;  # determine gist for different colors?
+
 
 data_dir = '/Users/ysakamoto/Projects/sccomp/data/scene_database/'
 dirs = [d for d in
@@ -323,7 +329,7 @@ np.save('file_names', file_names)
 
 
 # analysis: find the close match of a scene chosen
-k = 948
+k = 555
 
 gist_data = np.load('gist_data.npy')
 file_names = np.load('file_names.npy')
