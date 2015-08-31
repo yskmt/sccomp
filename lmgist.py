@@ -9,10 +9,7 @@ International Journal of Computer Vision, Vol. 42(3): 145-175, 2001.
 
 """
 
-import sys
-import os
-import os.path
-from pdb import set_trace
+from pdb import set_trace as st
 
 import numpy as np
 import numpy.matlib as matlib
@@ -21,19 +18,12 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 
-def lmgist(D, image, param, save_dir=None):
+def lmgist(fname, param, save_dir=None):
     """
-    D: filename
-
     Assume that there is only one file
     
     """
     
-    if save_dir:
-        precomputed = True
-    else:
-        precomputed = False
-
     param.G = create_gabor(param.orientations_per_scale,
                            param.img_size+2*param.boundary_extension)
 
@@ -48,19 +38,21 @@ def lmgist(D, image, param, save_dir=None):
     # compute gist features for all scenes
     gist = np.zeros([n_colors, n_features])
     g = []
-        
-    for n in range(n_colors):
-        # if gist has already computed, just read the file
 
-        # load image
-        # img = io.imread(D, as_grey=True)
-        img = io.imread(D)
+    # load image
+    # img = io.imread(fname, as_grey=True)
+    img_raw = io.imread(fname)
+
+    # TODO: if gist has already computed, just read the file
+    
+    for n in range(n_colors):
+
         # convert to grayscale (not a true grayscale)
         if param.color == 0:
-            img = np.mean(img, axis=2)
+            img = np.mean(img_raw, axis=2)
         # use the specified color
         else:
-            img = img[:, :, n]
+            img = img_raw[:, :, n]
 
         # resize and crop image to make it square
         img = transform.resize(img, (param.img_size, param.img_size),
@@ -74,11 +66,10 @@ def lmgist(D, image, param, save_dir=None):
 
         # get gist
         g = gist_gabor(output, param)
-
-        # save gist if a homegist file is provided
-
         gist[n, :] = np.reshape(g, len(g))
 
+    # TODO: save gist if a output file is provided
+        
     return gist.reshape(n_colors*len(g)), param
 
 
@@ -295,74 +286,21 @@ class param_gist:
         self.boundary_extension = 32
         self.color = 0
 
-param = param_gist()
-param.img_size = 256
-param.orientations_per_scale = [8, 8, 8, 8]
-param.number_blocks = 4
-param.fc_prefilt = 4
-
-# parameters for Hay's gist discreptor
+# param = param_gist()
 # param.img_size = 256
-# param.orientations_per_scale = [8, 6, 6, 4]
-# param.number_blocks = 8
+# param.orientations_per_scale = [8, 8, 8, 8]
+# param.number_blocks = 4
 # param.fc_prefilt = 4
-# param.color = 1
 
-data_dir = '/Users/ysakamoto/Projects/sccomp/data/scene_database/'
-dirs = [d for d in
-        os.listdir(data_dir)
-        if os.path.isdir(os.path.join(data_dir, d))]
-
-gist_data = []
-file_names = []
-for dir in dirs:
-    scene_dir = os.path.join(data_dir, dir)
-    img_files = [f for f in os.listdir(scene_dir)
-                 if os.path.isfile(os.path.join(scene_dir, f))
-                 and 'jpg' in f]
-
-    for f in img_files:
-        img_file = os.path.join(scene_dir, f)
-
-        print img_file
-        gist, param \
-            = lmgist(img_file, '', param)
-
-        gist_data.append(gist)
-        file_names.append(img_file)
-        
-np.save('gist_data', gist_data)
-np.save('file_names', file_names)
+# # parameters for Hay's gist discreptor
+# # param.img_size = 256
+# # param.orientations_per_scale = [8, 6, 6, 4]
+# # param.number_blocks = 8
+# # param.fc_prefilt = 4
+# # param.color = 1
 
 
-# analysis: find the close match of a scene chosen
-k = 1001
-
-gist_data = np.load('dbs/gist_data.npy')
-file_names = np.load('dbs/file_names.npy')
-
-gd = gist_data[k]
-fn = file_names[k]
-
-er = []
-for i in range(len(gist_data)):
-    er.append(np.linalg.norm(gist_data[i]-gd))
-
-er = np.array(er)
-agst = np.argsort(er)
-
-file_names = np.array(file_names)
-fn_sorted = file_names[agst][:10]
-print fn_sorted
-
-for i in range(len(fn_sorted)):
-    img_st = io.imread(fn_sorted[i])
-    plt.imshow(img_st)
-    plt.show()
-
-# show_gist(gd, param)
-
-# img_file = '/Users/ysakamoto/Projects/sccomp/data/scene_database/inside_city/a0004.jpg'
-# gist, param \
-#     = lmgist(img_file, '', param)
-# show_gist(gist, param)
+# # img_file = '/Users/ysakamoto/Projects/sccomp/data/scene_database/inside_city/a0004.jpg'
+# # gist, param \
+# #     = lmgist(img_file, param)
+# # show_gist(gist, param)
