@@ -61,7 +61,8 @@ file_names = np.load(f_db_name)
  
 # load query image and mask
 # query_name = 'data/scene_database/coast/n238045.jpg'
-query_name = 'data/scene_database/inside_city/boston247.jpg'
+# query_name = 'data/scene_database/inside_city/boston247.jpg'
+query_name = 'data/scene_database/street/urb848.jpg'
 mask_name = 'mask.png'
 img_query = io.imread(query_name)
 if not os.path.isfile(mask_name):
@@ -83,7 +84,7 @@ if len(img_mask.shape) != 2:
 elif not ((np.min(img_mask) == 0) and (np.max(img_mask == 1))):
     img_mask = (img_mask - np.min(img_mask)) \
         / (np.max(img_mask) - np.min(img_mask))
-
+    
 # GIST weights are the average value of mask pixels within each block
 s = (np.linspace(0, param.img_size, param.number_blocks+1)).astype(int)
 block_weight = np.zeros((param.number_blocks, param.number_blocks))
@@ -105,8 +106,6 @@ block_weight = matlib.repmat(
 
 gist_data = gist_data.reshape((2688, 512)).T
 
-import pdb
-# pdb.set_trace()
 er = np.linalg.norm(
     (gist_data - gist.reshape((len(gist_data), 1)))*block_weight, axis=0).flatten()
 agst = np.argsort(er)
@@ -135,6 +134,12 @@ for i in range(len(fn_sorted)):
     img_mask, img_src, offset_adj \
         = create_mask(img_mask.astype(np.float64),
                       img_target, img_src, offset=offset)
+
+    img_mask[:, -1]=0
+    img_mask[:, 0]=0
+    img_mask[-1, :]=0
+    img_mask[0, :]=0
+
     img_sc = poisson_blend(img_mask, img_src, img_target, method='normal', offset_adj=offset)
     plt.imshow(img_sc)
     plt.show()
