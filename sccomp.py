@@ -135,11 +135,6 @@ for i in range(len(fn_sorted)):
         = create_mask(img_mask.astype(np.float64),
                       img_target, img_src, offset=offset)
 
-    img_mask[:, -1]=0
-    img_mask[:, 0]=0
-    img_mask[-1, :]=0
-    img_mask[0, :]=0
-
     img_sc = poisson_blend(img_mask, img_src, img_target, method='normal', offset_adj=offset)
     plt.imshow(img_sc)
     plt.show()
