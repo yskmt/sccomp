@@ -1,3 +1,3 @@
-[submodule "lear-gist-python"]
-	path = lear-gist-python
-	url = https://github.com/yuichiroTCY/lear-gist-python.git
+[submodule "pymaxflow"]
+	path = pymaxflow
+	url = https://github.com/Rhoana/pymaxflow.git
