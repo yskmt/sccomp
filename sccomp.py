@@ -24,16 +24,16 @@ param.orientations_per_scale = [8, 8, 8, 8]
 param.number_blocks = 4
 param.fc_prefilt = 4
 
-if (not os.path.isfile(gists_db_name)) or (not os.path.isfile(f_db_name)):
+data_dir = '/Users/ysakamoto/Projects/sccomp/data/scene_database/'
+img_dirs = [d for d in
+        os.listdir(data_dir)
+        if os.path.isdir(os.path.join(data_dir, d))]
 
-    data_dir = '/Users/ysakamoto/Projects/sccomp/data/scene_database/'
-    dirs = [d for d in
-            os.listdir(data_dir)
-            if os.path.isdir(os.path.join(data_dir, d))]
+if (not os.path.isfile(gists_db_name)) or (not os.path.isfile(f_db_name)):
 
     gist_data = []
     file_names = []
-    for dir in dirs:
+    for dir in img_dirs:
         scene_dir = os.path.join(data_dir, dir)
         img_files = [f for f in os.listdir(scene_dir)
                      if os.path.isfile(os.path.join(scene_dir, f))
@@ -60,12 +60,21 @@ gist_data = np.load(gists_db_name)
 file_names = np.load(f_db_name)
  
 # load query image and mask
-# query_name = 'data/scene_database/coast/n238045.jpg'
-# query_name = 'data/scene_database/inside_city/boston247.jpg'
-query_name = 'data/scene_database/street/urb848.jpg'
+img_files = []
+for dir in img_dirs:
+    scene_dir = os.path.join(data_dir, dir)
+    img_files += [os.path.join(scene_dir, f) for f in os.listdir(scene_dir)
+                 if os.path.isfile(os.path.join(scene_dir, f))
+                 and 'jpg' in f]
+
+query_name = img_files[1020]
 mask_name = 'mask.png'
 img_query = io.imread(query_name)
-if not os.path.isfile(mask_name):
+uin = 'Y'
+if os.path.isfile(mask_name):
+    print "Mask file already exist. Create a new one? (Y|n)"
+    uin = raw_input()
+if uin in ['Y', '']:
     mtk.create_mask(query_name, mask_name)
 img_mask = io.imread(mask_name, as_grey=True)
 
@@ -111,7 +120,7 @@ er = np.linalg.norm(
 agst = np.argsort(er)
 
 file_names = np.array(file_names)
-fn_sorted = file_names[agst][:10]
+fn_sorted = file_names[agst][1:6]
 print fn_sorted
 
 # img_st = io.imread(query_name)

@@ -14,6 +14,9 @@ http://web.mit.edu/kehinger/www/class/
 
 ### Graphcut
 http://www.cc.gatech.edu/cpl/projects/graphcuttextures/
+* Use the Python implementation:
+  [PyMaxFlow](http://pmneila.github.io/PyMaxflow/index.html)
+
 
 ## Google image search
 http://incandescent.xyz/docs/
