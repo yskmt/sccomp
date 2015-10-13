@@ -10,8 +10,6 @@ import lmgist
 from lmgist import param_gist, show_gist
 import mask_tk as mtk
 
-import sys
-sys.path.append('../pb')
 from pb import poisson_blend, create_mask
 
 gists_db_name = 'dbs/gist_data.npy'
