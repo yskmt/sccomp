@@ -17,6 +17,7 @@ from pb import poisson_blend, create_mask
 gists_db_name = 'dbs/gist_data.npy'
 f_db_name = 'dbs/file_names.npy'
 
+
 # create a GIST database
 param = param_gist()
 param.img_size = 256
@@ -67,7 +68,13 @@ for dir in img_dirs:
                  if os.path.isfile(os.path.join(scene_dir, f))
                  and 'jpg' in f]
 
-query_name = img_files[1020]
+
+
+# ask for the image number to work with
+print "Choose the image number 0~%d" %len(img_files)
+num_img = int(raw_input())
+    
+query_name = img_files[num_img]
 mask_name = 'mask.png'
 img_query = io.imread(query_name)
 uin = 'Y'
@@ -121,12 +128,20 @@ agst = np.argsort(er)
 
 file_names = np.array(file_names)
 fn_sorted = file_names[agst][1:6]
-print fn_sorted
+print '\nImages chosen from scene completion are:\n', fn_sorted
 
 # img_st = io.imread(query_name)
 # plt.imshow(img_st)
 # plt.show()
 
+img_target = io.imread(query_name).astype(np.float64)
+img_sc = poisson_blend(img_mask, img_mask, img_target,
+                       method='src', offset_adj=(0,0))
+print '\nOriginal image with mask.'
+plt.imshow(img_sc)
+plt.show()
+
+print '\nCompleted images from 1st to 5th choices:'
 for i in range(len(fn_sorted)):
     # img_st = io.imread(fn_sorted[i])
     # plt.imshow(img_st)
@@ -135,7 +150,7 @@ for i in range(len(fn_sorted)):
     # img_sc = img_query
     # img_sc[np.where(img_mask==1)] = img_st[np.where(img_mask==1)]
 
-    img_target = io.imread(query_name).astype(np.float64)
+    # img_target = io.imread(query_name).astype(np.float64)
     img_src = io.imread(fn_sorted[i]).astype(np.float64)
     img_mask = io.imread(mask_name, as_grey=True)
     offset = (0,0)
