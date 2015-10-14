@@ -1,4 +1,6 @@
-# sccomp: Scene Completion
+# sccomp - scene completion implemented in Python
+
+[Example use](https://github.com/yskmt/sccomp/blob/master/example.ipynb)
 
 http://graphics.cs.cmu.edu/projects/scene-completion/
 
